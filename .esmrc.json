@@ -1,0 +1,7 @@
+{
+  "mode": "auto",
+  "cjs": {
+    "interop": true,
+    "namedExports": true
+  }
+}

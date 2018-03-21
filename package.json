@@ -1,0 +1,33 @@
+{
+  "name": "oaciq-brokers-scraper",
+  "version": "0.1.0",
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "index.esm-shim.js",
+  "module": "lib/index.js",
+  "scripts": {
+    "build": "babel src -d lib",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "cheerio": ">=1.0.0-rc.2 < 2.0",
+    "esm": "^3.0.7",
+    "libphonenumber-js": "^1.1.5",
+    "node-fetch": "^2.1.1",
+    "ramda": "^0.25.0",
+    "ramda-adjunct": "^2.6.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.9.0"
+  },
+  "engines": {
+    "node": ">=7.6"
+  },
+  "private": true
+}
