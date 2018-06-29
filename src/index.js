@@ -18,7 +18,7 @@ const viewMemberInfoUrl = '/cgi-bin/WebObjects/RegistrePlus.woa/wa/voirInfoMembr
 const idParamName = 'noMembre';
 const notAvailableTexts = [
   'not available',
-  'non disponible ',
+  'non disponible',
 ];
 
 async function listBrokers({
