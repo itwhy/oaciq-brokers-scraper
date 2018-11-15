@@ -133,14 +133,14 @@ async function getBrokerDetails({
     contact: R.compose(
       R.ifElse(R.complement(R.isNil), $contactDetailsRow => ({
         address: $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(1)').text().trim(),
-        telephone: R.compose(
+        telephone: R.ifElse(R.complement(R.contains(R.__, notAvailableTexts)), R.compose(
           R.curryN(2, formatPhoneNumber)(R.__, 'E.164'),
           R.curryN(2, parsePhoneNumber)(R.__, { defaultCountry: 'CA' }),
-        )($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(2)').text().trim()),
-        fax: R.compose(
+        ), R.always(null))($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(2)').text().trim()),
+        fax: R.ifElse(R.complement(R.contains(R.__, notAvailableTexts)), R.compose(
           R.curryN(2, formatPhoneNumber)(R.__, 'E.164'),
           R.curryN(2, parsePhoneNumber)(R.__, { defaultCountry: 'CA' }),
-        )($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(3)').text().trim()),
+        ), R.always(null))($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(3)').text().trim()),
         email: RA.defaultWhen(R.contains(R.__, notAvailableTexts), null, $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(4)').text().trim()),
         website: RA.defaultWhen(R.contains(R.__, notAvailableTexts), null, $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(5)').text().trim()),
       }), R.always(null)),
@@ -194,14 +194,14 @@ async function getAgencyDetails({
     },
     contact: {
       address: $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(1)').text().trim(),
-      telephone: R.compose(
+      telephone: R.ifElse(R.complement(R.contains(R.__, notAvailableTexts)), R.compose(
         R.curryN(2, formatPhoneNumber)(R.__, 'E.164'),
         R.curryN(2, parsePhoneNumber)(R.__, { defaultCountry: 'CA' }),
-      )($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(2)').text().trim()),
-      fax: R.compose(
+      ), R.always(null))($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(2)').text().trim()),
+      fax: R.ifElse(R.complement(R.contains(R.__, notAvailableTexts)), R.compose(
         R.curryN(2, formatPhoneNumber)(R.__, 'E.164'),
         R.curryN(2, parsePhoneNumber)(R.__, { defaultCountry: 'CA' }),
-      )($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(3)').text().trim()),
+      ), R.always(null))($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(3)').text().trim()),
       email: RA.defaultWhen(R.contains(R.__, notAvailableTexts), null, $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(4)').text().trim()),
       website: RA.defaultWhen(R.contains(R.__, notAvailableTexts), null, $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(5)').text().trim()),
     },
