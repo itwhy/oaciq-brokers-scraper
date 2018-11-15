@@ -28,6 +28,10 @@ indent_style = space
 indent_size = 4
 trim_trailing_whitespace = false
 
+[*.sh]
+indent_style = tab
+indent_size = 4
+
 [.babelrc]
 indent_style = space
 indent_size = 2
