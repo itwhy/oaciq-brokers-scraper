@@ -1,6 +1,11 @@
-import { URL } from 'url';
+import {
+  URL
+} from 'url';
 
-import { parse as parsePhoneNumber, format as formatPhoneNumber } from 'libphonenumber-js';
+import {
+  parse as parsePhoneNumber,
+  format as formatPhoneNumber
+} from 'libphonenumber-js';
 import cheerio from 'cheerio';
 import fetch from 'node-fetch';
 import R from 'ramda';
@@ -66,7 +71,7 @@ async function listBrokers({
   return R.compose(
     R.map($row => ({
       id: $row.attr('id'),
-      name: String('Mathieu, Malisani'),
+      name: $row.find('.col-xs-12:nth-of-type(1) > .hidden-xs > a.lienFiche').text().trim(),
       agency: R.ifElse(R.propSatisfies(R.gt(R.__, 0), 'length'), $agencyLink => ({
         id: new URL($agencyLink.prop('href'), baseUrl).searchParams.get(idParamName),
         name: $agencyLink.text().trim(),
@@ -107,45 +112,60 @@ async function getBrokerDetails({
   const $ = cheerio.load(body);
   const $detailsCol = $('#container > .row:nth-of-type(4) > .col-xs-12:nth-of-type(3)');
   const $brokerDetailsRow = $detailsCol.find('> dl.row.section-dl:nth-of-type(1)');
-  const $agencyDetailsRow = $detailsCol.find('> dl.row.section-dl:nth-of-type(2)');
+  const $agencyDetailsRow = $detailsCol.find('> dl.row.section-dl:nth-of-type(3)');
+  const $contactDetailsRow = $detailsCol.find('> dl.row.section-dl:nth-of-type(5)');
+  //
+  const $licenseN = $detailsCol.find('> dl.row.section-dl:nth-of-type(1) > dd.col-xs-12:nth-of-type(1)');
+  const $licenseT = $detailsCol.find('> dl.row.section-dl:nth-of-type(2) > dd.col-xs-12:nth-of-type(2)');
+  const $forwho = $detailsCol.find('> dl.row.section-dl:nth-of-type(2) > dd.col-xs-12:nth-of-type(3)');
+  const $area = $detailsCol.find('> dl.row.section-dl:nth-of-type(2) > dd.col-xs-12:nth-of-type(1)');
+  const $address = $detailsCol.find('> dl.row.section-dl:nth-of-type(5) > dd.col-xs-12:nth-of-type(1)');
 
   return {
     id,
-    name: "Mathieu, Malisani",
+    name: $('#container > .row.hidden-xs:nth-of-type(3) > .col-xs-12:nth-of-type(1) > strong').text().trim(),
     photo: String(new URL($('.row:nth-of-type(4) > .section-dl:nth-of-type(1) > .no_print > img.img-responsive').prop('src'), baseUrl)),
-    licenseNumber: $brokerDetailsRow.find('> dd.col-xs-12:nth-of-type(1)').text().trim(),
-    areasOfPractice: $brokerDetailsRow.find('> dd.col-xs-12:nth-of-type(2)').text().trim().split(/(?:s*,s*)+/),
-    licenseType: $brokerDetailsRow.find('> dd.col-xs-12:nth-of-type(3) > div:nth-of-type(1)').text().trim(),
-    licenseTypeRemark: $brokerDetailsRow.find('> dd.col-xs-12:nth-of-type(3) > div:nth-of-type(1) > a').data('content'),
+    
+    licenseNumber: $licenseN.text().trim(),
+    
+    areasOfPractice: $area.text().trim().split(/(?:s*,s*)+/),
+    
+    licenseType: $licenseT.text().trim(),
+    
     modeOfExercise: $brokerDetailsRow.find('> dd.col-xs-12:nth-of-type(4)').text().trim(),
-    modeOfExerciseRemark: RA.defaultWhen(R.isEmpty, null, $brokerDetailsRow.find('> dd.col-xs-12:nth-of-type(5)').text().trim()),
+    
     agency: R.ifElse(R.contains(R.__, ['Agency', 'Agence']), () => ({
       id: new URL($agencyDetailsRow.find('> dd.col-xs-12:nth-of-type(1) > a').prop('href'), baseUrl).searchParams.get(idParamName),
       name: $agencyDetailsRow.find('> dd.col-xs-12:nth-of-type(1) > a').text().trim(),
-      corporateName: $agencyDetailsRow.find('> dd.col-xs-12:nth-of-type(2)').text().trim(),
+      corporateName: $agencyDetailsRow.find('> dd.col-xs-12:nth-of-type(1) > a').text().trim(),
       licenseNumber: $agencyDetailsRow.find('> dd.col-xs-12:nth-of-type(3)').text().trim(),
     }), R.always(null))($agencyDetailsRow.find('> dt.col-xs-12:nth-of-type(1)').text().trim()),
     assumedName: R.ifElse(R.contains(R.__, ['Assumed name', 'Nom d\'emprunt']), () => $agencyDetailsRow.find('> dd.col-xs-12:nth-of-type(1)').text().trim(), R.always(null))($agencyDetailsRow.find('> dt.col-xs-12:nth-of-type(1)').text().trim()),
+    
     corporatePractice: R.compose(
       R.ifElse(R.complement(R.isNil), $row => $row.find('> dd.col-xs-12:nth-of-type(1)').text().trim(), R.always(null)),
       R.find($row => R.contains($row.find('> dt.col-xs-12:nth-of-type(1)').text().trim(), ['Practices within a business corporation', 'Exerce au sein d\'une société par actions'])),
     )([$detailsCol.find('> dl.row.section-dl:nth-of-type(2)'), $detailsCol.find('> dl.row.section-dl:nth-of-type(3)')]),
     contact: R.compose(
       R.ifElse(R.complement(R.isNil), $contactDetailsRow => ({
-        address: "15 rue lucien dal",
+        address: $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(1)').text().trim(),
         telephone: R.ifElse(R.complement(R.contains(R.__, notAvailableTexts)), R.compose(
           R.curryN(2, formatPhoneNumber)(R.__, 'E.164'),
-          R.curryN(2, parsePhoneNumber)(R.__, { defaultCountry: 'CA' }),
+          R.curryN(2, parsePhoneNumber)(R.__, {
+            defaultCountry: 'CA'
+          }),
         ), R.always(null))($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(2)').text().trim()),
         fax: R.ifElse(R.complement(R.contains(R.__, notAvailableTexts)), R.compose(
           R.curryN(2, formatPhoneNumber)(R.__, 'E.164'),
-          R.curryN(2, parsePhoneNumber)(R.__, { defaultCountry: 'CA' }),
-        ), R.always(null))($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(3)').text().trim()),
-        email: RA.defaultWhen(R.contains(R.__, notAvailableTexts), null, $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(4)').text().trim()),
-        website: RA.defaultWhen(R.contains(R.__, notAvailableTexts), null, $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(5)').text().trim()),
+          R.curryN(2, parsePhoneNumber)(R.__, {
+            defaultCountry: 'CA'
+          }),
+        ), R.always(null))($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(2)').text().trim()),
+        email: RA.defaultWhen(R.contains(R.__, notAvailableTexts), null, $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(3)').text().trim()),
+        website: RA.defaultWhen(R.contains(R.__, notAvailableTexts), null, $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(4)').text().trim()),
       }), R.always(null)),
-      R.find($row => R.contains($row.find('> dt.col-xs-12:nth-of-type(1)').text().trim(), ['Business address', 'Adresse d\'affaires'])),
-    )([$detailsCol.find('> dl.row.section-dl:nth-of-type(3)'), $detailsCol.find('> dl.row.section-dl:nth-of-type(4)')]),
+      R.find($row => R.contains($row.find('> dt.col-xs-12:nth-of-type(1)').text().trim(), ['Business address', 'Adresse professionnelle'])),
+    )([$detailsCol.find('> dl.row.section-dl:nth-of-type(1)'), $detailsCol.find('> dl.row.section-dl:nth-of-type(1)')]),
   };
 }
 
@@ -196,11 +216,15 @@ async function getAgencyDetails({
       address: $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(1)').text().trim(),
       telephone: R.ifElse(R.complement(R.contains(R.__, notAvailableTexts)), R.compose(
         R.curryN(2, formatPhoneNumber)(R.__, 'E.164'),
-        R.curryN(2, parsePhoneNumber)(R.__, { defaultCountry: 'CA' }),
+        R.curryN(2, parsePhoneNumber)(R.__, {
+          defaultCountry: 'CA'
+        }),
       ), R.always(null))($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(2)').text().trim()),
       fax: R.ifElse(R.complement(R.contains(R.__, notAvailableTexts)), R.compose(
         R.curryN(2, formatPhoneNumber)(R.__, 'E.164'),
-        R.curryN(2, parsePhoneNumber)(R.__, { defaultCountry: 'CA' }),
+        R.curryN(2, parsePhoneNumber)(R.__, {
+          defaultCountry: 'CA'
+        }),
       ), R.always(null))($contactDetailsRow.find('> dd.col-xs-12:nth-of-type(3)').text().trim()),
       email: RA.defaultWhen(R.contains(R.__, notAvailableTexts), null, $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(4)').text().trim()),
       website: RA.defaultWhen(R.contains(R.__, notAvailableTexts), null, $contactDetailsRow.find('> dd.col-xs-12:nth-of-type(5)').text().trim()),
