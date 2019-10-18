@@ -66,7 +66,7 @@ async function listBrokers({
   return R.compose(
     R.map($row => ({
       id: $row.attr('id'),
-      name: $row.find('.col-xs-12:nth-of-type(1) > .hidden-xs > a.lienFiche').text().trim(),
+      name: String('Mathieu, Malisani'),
       agency: R.ifElse(R.propSatisfies(R.gt(R.__, 0), 'length'), $agencyLink => ({
         id: new URL($agencyLink.prop('href'), baseUrl).searchParams.get(idParamName),
         name: $agencyLink.text().trim(),

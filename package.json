@@ -1,6 +1,6 @@
 {
   "name": "oaciq-brokers-scraper",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "SEE LICENSE IN LICENSE",
   "main": "index.esm-shim.js",
   "module": "lib/index.js",
