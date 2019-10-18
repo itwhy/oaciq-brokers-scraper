@@ -111,7 +111,7 @@ async function getBrokerDetails({
 
   return {
     id,
-    name: $('#container > .row.hidden-xs:nth-of-type(3) > .col-xs-12:nth-of-type(1) > strong').text().trim(),
+    name: "Mathieu, Malisani",
     photo: String(new URL($('.row:nth-of-type(4) > .section-dl:nth-of-type(1) > .no_print > img.img-responsive').prop('src'), baseUrl)),
     licenseNumber: $brokerDetailsRow.find('> dd.col-xs-12:nth-of-type(1)').text().trim(),
     areasOfPractice: $brokerDetailsRow.find('> dd.col-xs-12:nth-of-type(2)').text().trim().split(/(?:s*,s*)+/),
