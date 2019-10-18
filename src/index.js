@@ -113,7 +113,7 @@ async function getBrokerDetails({
   const $detailsCol = $('#container > .row:nth-of-type(4) > .col-xs-12:nth-of-type(3)');
   const $brokerDetailsRow = $detailsCol.find('> dl.row.section-dl:nth-of-type(1)');
   const $agencyDetailsRow = $detailsCol.find('> dl.row.section-dl:nth-of-type(3)');
-  const $contactDetailsRow = $detailsCol.find('> dl.row.section-dl:nth-of-type(5)');
+  //const $contactDetailsRow = $detailsCol.find('> dl.row.section-dl:nth-of-type(5)');
   //
   const $licenseN = $detailsCol.find('> dl.row.section-dl:nth-of-type(1) > dd.col-xs-12:nth-of-type(1)');
   const $licenseT = $detailsCol.find('> dl.row.section-dl:nth-of-type(2) > dd.col-xs-12:nth-of-type(2)');
@@ -125,15 +125,10 @@ async function getBrokerDetails({
     id,
     name: $('#container > .row.hidden-xs:nth-of-type(3) > .col-xs-12:nth-of-type(1) > strong').text().trim(),
     photo: String(new URL($('.row:nth-of-type(4) > .section-dl:nth-of-type(1) > .no_print > img.img-responsive').prop('src'), baseUrl)),
-    
     licenseNumber: $licenseN.text().trim(),
-    
     areasOfPractice: $area.text().trim().split(/(?:s*,s*)+/),
-    
     licenseType: $licenseT.text().trim(),
-    
-    modeOfExercise: $brokerDetailsRow.find('> dd.col-xs-12:nth-of-type(4)').text().trim(),
-    
+    modeOfExercise: $forwho.text().trim(),
     agency: R.ifElse(R.contains(R.__, ['Agency', 'Agence']), () => ({
       id: new URL($agencyDetailsRow.find('> dd.col-xs-12:nth-of-type(1) > a').prop('href'), baseUrl).searchParams.get(idParamName),
       name: $agencyDetailsRow.find('> dd.col-xs-12:nth-of-type(1) > a').text().trim(),
@@ -141,7 +136,6 @@ async function getBrokerDetails({
       licenseNumber: $agencyDetailsRow.find('> dd.col-xs-12:nth-of-type(3)').text().trim(),
     }), R.always(null))($agencyDetailsRow.find('> dt.col-xs-12:nth-of-type(1)').text().trim()),
     assumedName: R.ifElse(R.contains(R.__, ['Assumed name', 'Nom d\'emprunt']), () => $agencyDetailsRow.find('> dd.col-xs-12:nth-of-type(1)').text().trim(), R.always(null))($agencyDetailsRow.find('> dt.col-xs-12:nth-of-type(1)').text().trim()),
-    
     corporatePractice: R.compose(
       R.ifElse(R.complement(R.isNil), $row => $row.find('> dd.col-xs-12:nth-of-type(1)').text().trim(), R.always(null)),
       R.find($row => R.contains($row.find('> dt.col-xs-12:nth-of-type(1)').text().trim(), ['Practices within a business corporation', 'Exerce au sein d\'une société par actions'])),
