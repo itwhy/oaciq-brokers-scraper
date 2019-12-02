@@ -102,8 +102,7 @@ async function getBrokerDetails({
   const $detailsCol = $('#container > .row:nth-of-type(4) > .col-xs-12:nth-of-type(3)');
   const $brokerDetailsRow = $detailsCol.find('> dl.row.section-dl:nth-of-type(1)');
   const $agencyDetailsRow = $detailsCol.find('> dl.row.section-dl:nth-of-type(3)');
-  const $contactDetailsRow = $detailsCol.find('> dl.row.section-dl:nth-of-type(5)');
-
+  
   return {
     id,
     name: $('#container > .row.hidden-xs:nth-of-type(3) > .col-xs-12:nth-of-type(1) > strong').text().trim(),
