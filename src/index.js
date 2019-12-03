@@ -136,7 +136,7 @@ async function getAgencyDetails({
   language = 'French'
 }) {
   if (R.isNil(id)) {
-    throw new Error('`id` option is required');
+    throw new Error('`id` option is required please');
   }
 
   if (!R.contains(language)(LANGUAGES)) {
